@@ -283,11 +283,11 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
     <div class="st">Consolidado — Profitto</div>
     <div class="g4" id="kpis"><div class="ld"><div class="sp"></div> Carregando...</div></div>
 
-    <div class="st">Captação por Nível</div>
-    <div class="g3" id="por-nivel"></div>
-
     <div class="st">Captação por Assessor</div>
     <div class="g3" id="por-assessor"></div>
+
+    <div class="st">Captação por Nível</div>
+    <div id="por-nivel" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:14px;margin-bottom:28px"></div>
   </div>
 
   <!-- ══ INTENSIDADE ══ -->
@@ -714,7 +714,7 @@ function renderIntensidade() {
 }
 
 load();
-setInterval(load, 2*60*1000);
+setInterval(load, 5*60*1000);
 </script>
 </body>
 </html>
