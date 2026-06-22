@@ -356,7 +356,8 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 
 <script>
 const SHEET_ID = '1IcGygIIk6TUQBf4Vcx-KOtD2RDK5y0dbAcELr_U6KBs';
-const API_KEY  = 'AIzaSyAkj5bS38JY_vgOPDTMLxcXEfNAFHsVqU8';
+const GID_ADMIN  = '309056838'; // gid da aba admin_total — confirme na URL da planilha
+const GID_INTENS = '1826134697'; // gid da aba Intensidade — confirme na URL da planilha
 const META_DIA = 15;
 
 let D = [], diasUteis = 16, sortMode = 'cap';
@@ -385,12 +386,34 @@ function setSort(mode) {
   renderRanking();
 }
 
-// ── FETCH ──
-async function fr(range) {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
-  const r = await fetch(url);
-  if (!r.ok) throw new Error('HTTP '+r.status);
-  return (await r.json()).values || [];
+// ── FETCH via CSV público (sem API Key) ──
+// Requer: planilha compartilhada como "Qualquer pessoa com o link - Leitor"
+function csvToRows(text) {
+  // Parser CSV simples que respeita campos entre aspas
+  const rows = [];
+  const lines = text.split('\n');
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const cols = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') { inQ = !inQ; continue; }
+      if (c === ',' && !inQ) { cols.push(cur); cur = ''; continue; }
+      cur += c;
+    }
+    cols.push(cur);
+    rows.push(cols);
+  }
+  return rows;
+}
+
+async function fetchCsv(gid) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
+  const r = await fetch(url, { cache: 'no-store' });
+  if (!r.ok) throw new Error('HTTP ' + r.status + ' ao buscar gid=' + gid);
+  const text = await r.text();
+  return csvToRows(text);
 }
 
 // ── PARSE ──
@@ -424,8 +447,8 @@ function clusterCls(n) { return n==='Júnior'?'cls-j':n==='Pleno'?'cls-p':'cls-s
 async function load() {
   try {
     const [adm, intz] = await Promise.all([
-      fr('admin_total!A1:V25'),
-      fr('Intensidade!A1:R25'),
+      fetchCsv(GID_ADMIN),
+      fetchCsv(GID_INTENS),
     ]);
 
     // dias úteis: Intensidade linha index 1, col R (index 17)
@@ -588,16 +611,19 @@ function renderAssessores() {
     const pos=d.cap>=0, w=(Math.abs(d.cap)/maxA)*100;
     h+=`<div class="ac">
       <div class="ac-hdr">
-        <div>
+        <div style="flex:1;min-width:0">
           <div class="ac-n">${d.nome}</div>
           <div class="ac-lvl">${d.nivel}</div>
         </div>
-        <span class="kbd ${bc(d.pct)}">${d.pct!==null?fp(d.pct):'—'}</span>
+        <span class="kbd ${bc(d.pct)}" style="font-size:14px;padding:6px 14px;white-space:nowrap">${d.pct!==null?fp(d.pct):'—'}</span>
       </div>
-      <div class="mb"><div class="mt" style="height:10px"><div class="mf" style="background:${pos?'var(--acc)':'var(--red)'};width:${w}%"></div></div>
-        <div class="mv ${pos?'':'neg'}">${fm(d.cap)}</div>
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px">
+        <div style="flex:1;height:12px;background:var(--dim);border-radius:99px;overflow:hidden;position:relative">
+          <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:${pos?'var(--acc)':'var(--red)'};width:${w}%;box-shadow:${pos?'0 0 10px rgba(200,169,110,.4)':'0 0 10px rgba(240,106,106,.4)'}"></div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:800;min-width:90px;text-align:right;color:${pos?'var(--txt)':'var(--red)'}">${fm(d.cap)}</div>
       </div>
-      <div class="mm" style="margin-top:6px">Meta: ${fm(d.meta)} · Score: ${d.score} pts</div>
+      <div style="font-size:12px;color:var(--mut)">Meta: <span style="color:var(--txt);font-weight:600">${fm(d.meta)}</span> · Score: <span style="color:var(--acc);font-weight:700">${d.score} pts</span></div>
     </div>`;
   });
   document.getElementById('por-assessor').innerHTML = h;
@@ -688,7 +714,7 @@ function renderIntensidade() {
 }
 
 load();
-setInterval(load, 5*60*1000);
+setInterval(load, 2*60*1000);
 </script>
 </body>
 </html>
