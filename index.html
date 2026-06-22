@@ -292,37 +292,43 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 
   <!-- ══ INTENSIDADE ══ -->
   <div class="view" id="view-intensidade">
-    <div class="st">Sistema de Pontuação — Pipedrive</div>
-    <div class="spnl">
-      <div class="sgrd">
-        <div class="si"><div class="sact">L1</div><div class="spts">1</div><div class="sunit">ponto</div></div>
-        <div class="si"><div class="sact">LR</div><div class="spts">1</div><div class="sunit">ponto</div></div>
-        <div class="si"><div class="sact">R1 / R2 / R3</div><div class="spts">3</div><div class="sunit">pontos cada</div></div>
-        <div class="si"><div class="sact">2×1</div><div class="spts">2</div><div class="sunit">pontos</div></div>
-        <div class="si"><div class="sact">Cross Sell</div><div class="spts">3</div><div class="sunit">pontos</div></div>
-        <div class="si"><div class="sact">Presencial Cap</div><div class="spts">5</div><div class="sunit">pontos</div></div>
-        <div class="si"><div class="sact">Presencial Rel</div><div class="spts">5</div><div class="sunit">pontos</div></div>
-        <div class="si"><div class="sact">Dias úteis</div><div class="spts" id="dias-uteis" style="color:var(--txt)">—</div><div class="sunit">transcorridos</div></div>
-        <div class="si hl">
-          <div class="sact" style="color:var(--acc)">Meta diária</div>
-          <div class="spts big">15</div>
-          <div class="sunit">pontos/dia</div>
-        </div>
-        <div class="si" style="border:1px solid var(--bd);border-radius:10px">
-          <div class="sact">Score escritório</div>
-          <div class="spts" id="score-total" style="color:var(--grn)">—</div>
-          <div class="sunit">total mês</div>
-        </div>
+
+    <!-- topo: meta + dias -->
+    <div style="display:flex;align-items:center;gap:32px;margin-bottom:22px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)">Meta diária</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:800;color:var(--grn)">15 pts</div>
       </div>
-      <div class="smeta">
-        <div class="smi"><strong>6 L1</strong> por dia</div>
-        <div class="smi"><strong>2 R1</strong> por dia</div>
-        <div class="smi"><strong>3-1</strong> vxl / con / vid por dia</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)">Dias úteis</div>
+        <div id="dias-uteis" style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:800;color:var(--txt)">—</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)">Score escritório</div>
+        <div id="score-total" style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:800;color:var(--acc)">—</div>
+      </div>
+      <div style="margin-left:auto;font-size:12px;color:var(--mut)">
+        <span style="display:inline-block;width:14px;height:6px;background:var(--acc);border-radius:3px;margin-right:5px;vertical-align:middle"></span>Ritmo diário
+        <span style="display:inline-block;width:14px;height:6px;background:var(--s2);border:1px solid var(--bd);border-radius:3px;margin-left:14px;margin-right:5px;vertical-align:middle"></span>Acumulado mês
       </div>
     </div>
 
-    <div class="st">Score por Assessor</div>
-    <div class="igrid" id="igrid"><div class="ld"><div class="sp"></div></div></div>
+    <!-- corpo: 2 colunas -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+
+      <!-- COLUNA ESQUERDA: assessores individuais -->
+      <div>
+        <div class="st">Ranking Individual</div>
+        <div id="igrid-ind" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+
+      <!-- COLUNA DIREITA: times / grupos -->
+      <div>
+        <div class="st">Pontos por Time</div>
+        <div id="igrid-times" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+
+    </div>
   </div>
 
   <!-- ══ RANKING ══ -->
@@ -612,18 +618,18 @@ function renderAssessores() {
     h+=`<div class="ac">
       <div class="ac-hdr">
         <div style="flex:1;min-width:0">
-          <div class="ac-n">${d.nome}</div>
-          <div class="ac-lvl">${d.nivel}</div>
+          <div class="ac-n" style="font-size:26px">${d.nome}</div>
+          <div class="ac-lvl" style="font-size:13px;margin-top:6px">${d.nivel}</div>
         </div>
-        <span class="kbd ${bc(d.pct)}" style="font-size:14px;padding:6px 14px;white-space:nowrap">${d.pct!==null?fp(d.pct):'—'}</span>
+        <span class="kbd ${bc(d.pct)}" style="font-size:16px;padding:8px 18px;white-space:nowrap">${d.pct!==null?fp(d.pct):'—'}</span>
       </div>
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px">
-        <div style="flex:1;height:12px;background:var(--dim);border-radius:99px;overflow:hidden;position:relative">
-          <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:${pos?'var(--acc)':'var(--red)'};width:${w}%;box-shadow:${pos?'0 0 10px rgba(200,169,110,.4)':'0 0 10px rgba(240,106,106,.4)'}"></div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px">
+        <div style="flex:1;height:16px;background:var(--dim);border-radius:99px;overflow:hidden;position:relative">
+          <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:${pos?'var(--acc)':'var(--red)'};width:${w}%;box-shadow:${pos?'0 0 12px rgba(200,169,110,.5)':'0 0 12px rgba(240,106,106,.5)'}"></div>
         </div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:800;min-width:90px;text-align:right;color:${pos?'var(--txt)':'var(--red)'}">${fm(d.cap)}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:800;min-width:110px;text-align:right;color:${pos?'var(--txt)':'var(--red)'}">${fm(d.cap)}</div>
       </div>
-      <div style="font-size:12px;color:var(--mut)">Meta: <span style="color:var(--txt);font-weight:600">${fm(d.meta)}</span> · Score: <span style="color:var(--acc);font-weight:700">${d.score} pts</span></div>
+      <div style="font-size:14px;color:var(--mut)">Meta: <span style="color:var(--txt);font-weight:700;font-size:15px">${fm(d.meta)}</span> · Score: <span style="color:var(--acc);font-weight:700;font-size:15px">${d.score} pts</span></div>
     </div>`;
   });
   document.getElementById('por-assessor').innerHTML = h;
@@ -668,47 +674,106 @@ function renderRanking() {
 }
 
 // ── INTENSIDADE ──
+// Mapeamento de filial por primeiro nome
+const FILIAIS = {
+  'Diogo':   'Torres',
+  'Rodrigo': 'Torres',
+  'Cleison': 'Blumenau',
+};
+
+function filial(nome) {
+  const primeiro = nome.trim().split(' ')[0];
+  return FILIAIS[primeiro] || 'Porto Alegre';
+}
+
 function renderIntensidade() {
-  const sorted = [...D].sort((a,b)=>b.score-a.score);
-  const allActs = [
-    {k:'l1i',  lbl:'L1',             pts:1},
-    {k:'lri',  lbl:'LR',             pts:1},
-    {k:'r1i',  lbl:'R1',             pts:3},
-    {k:'r2i',  lbl:'R2',             pts:3},
-    {k:'r3i',  lbl:'R3',             pts:3},
-    {k:'pcapi',lbl:'Presencial Cap', pts:5},
-    {k:'preli',lbl:'Presencial Rel', pts:5},
-    {k:'d1i',  lbl:'2×1',            pts:2},
-    {k:'cvi',  lbl:'Cross Vida',     pts:3},
-    {k:'cci',  lbl:'Cross Consórcio',pts:3},
+  const META_DIA_PTS = 15;
+  const sorted = [...D].sort((a,b) => b.score - a.score);
+  const maxScore = Math.max(...D.map(d => d.score), 1);
+  const maxRitmo = Math.max(...D.map(d => parseFloat(d.ritmo)||0), 1);
+
+  // ── COLUNA ESQUERDA: individual ──
+  document.getElementById('igrid-ind').innerHTML = sorted.map((d, i) => {
+    const rt    = parseFloat(d.ritmo) || 0;
+    const wMes  = (d.score / maxScore) * 100;
+    const wDia  = Math.min((rt / META_DIA_PTS) * 100, 100);
+    const clDia = rt >= META_DIA_PTS ? 'var(--grn)' : rt >= META_DIA_PTS * 0.6 ? 'var(--ylw)' : 'var(--red)';
+    const pos   = i + 1;
+    const posC  = pos===1?'gold':pos===2?'silver':pos===3?'bronze':'';
+    const posColor = pos===1?'var(--acc)':pos===2?'#b0b0d0':pos===3?'#cd7f32':'var(--mut)';
+
+    return `<div style="background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:${posColor};width:36px;flex-shrink:0">${pos}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.nome}</div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--mut);margin-top:2px">${d.nivel} · ${filial(d.nome)}</div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:var(--acc);flex-shrink:0">${d.score}</div>
+      </div>
+      <!-- barra ritmo diário -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:7px">
+        <div style="font-size:10px;color:var(--mut);width:72px;flex-shrink:0;text-transform:uppercase;letter-spacing:.08em">Dia</div>
+        <div style="flex:1;height:10px;background:var(--dim);border-radius:99px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:${clDia};width:${wDia}%;transition:width 1s"></div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:${clDia};width:48px;text-align:right">${rt.toFixed(1)}</div>
+      </div>
+      <!-- barra acumulado mês -->
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:10px;color:var(--mut);width:72px;flex-shrink:0;text-transform:uppercase;letter-spacing:.08em">Mês</div>
+        <div style="flex:1;height:10px;background:var(--dim);border-radius:99px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:var(--acc);width:${wMes}%;transition:width 1s"></div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--txt);width:48px;text-align:right">${d.score}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // ── COLUNA DIREITA: times ──
+  // Grupos: Profitto Total, Torres, Blumenau, Júnior, Pleno, Sênior
+  const grupos = [
+    { label: 'PROFITTO',   filter: d => true,                  destaque: true },
+    { label: 'Torres',     filter: d => filial(d.nome)==='Torres' },
+    { label: 'Blumenau',   filter: d => filial(d.nome)==='Blumenau' },
+    { label: 'Porto Alegre', filter: d => filial(d.nome)==='Porto Alegre' },
+    { label: 'Júniores',   filter: d => d.nivel==='Júnior' },
+    { label: 'Plenos',     filter: d => d.nivel==='Pleno' },
+    { label: 'Sêniors',    filter: d => d.nivel==='Sênior' },
   ];
 
-  document.getElementById('igrid').innerHTML = sorted.map(d=>{
-    const sc=d.score, rt=parseFloat(d.ritmo)||0;
-    const cl=sc>=META_DIA?'cg':sc>=META_DIA*0.6?'cy':'cr';
-    const maxL1=Math.max(...D.map(x=>x.l1i||0),1);
+  const totalScore = D.reduce((a,d)=>a+d.score,0);
+  const totalRitmo = D.length ? D.reduce((a,d)=>a+(parseFloat(d.ritmo)||0),0)/D.length : 0;
 
-    const acts=allActs.map(a=>{
-      const v=d[a.k]||0;
-      const max=a.k==='l1i'?maxL1:Math.max(...D.map(x=>x[a.k]||0),1);
-      const w=max?Math.min((v/max)*100,100):0;
-      return `<div class="arow">
-        <div class="anm">${a.lbl} <span style="color:var(--mut);font-size:10px">×${a.pts}</span></div>
-        <div class="atrk"><div class="afil" style="width:${w}%"></div></div>
-        <div class="aval">${v||'—'}</div>
-      </div>`;
-    }).join('');
+  document.getElementById('igrid-times').innerHTML = grupos.map(g => {
+    const membros = D.filter(g.filter);
+    if (!membros.length) return '';
+    const sc  = membros.reduce((a,d)=>a+d.score,0);
+    const rt  = membros.reduce((a,d)=>a+(parseFloat(d.ritmo)||0),0) / membros.length;
+    const wMes = (sc / Math.max(totalScore,1)) * 100;
+    const wDia = Math.min((rt / META_DIA_PTS) * 100, 100);
+    const clDia = rt >= META_DIA_PTS ? 'var(--grn)' : rt >= META_DIA_PTS*0.6 ? 'var(--ylw)' : 'var(--red)';
+    const borda = g.destaque ? 'border-color:rgba(200,169,110,.4)' : '';
 
-    return `<div class="icard">
-      <div class="ihdr">
-        <div>
-          <div class="iname">${d.nome}</div>
-          <div class="ilvl">${d.nivel}</div>
-          <div class="ritmo" style="margin-top:8px">Ritmo: <strong>${rt.toFixed(1)}</strong> pts/dia</div>
-        </div>
-        <div class="circ ${cl}"><div class="cnum ${cl}">${sc}</div><div class="clbl">pts</div></div>
+    return `<div style="background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:16px 20px;${borda}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:${g.destaque?'var(--acc)':'var(--txt)'}">${g.label}</div>
+        <div style="font-size:12px;color:var(--mut)">${membros.length} assessor${membros.length>1?'es':''}</div>
       </div>
-      <div class="acts">${acts}</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:7px">
+        <div style="font-size:10px;color:var(--mut);width:72px;flex-shrink:0;text-transform:uppercase;letter-spacing:.08em">Dia (méd)</div>
+        <div style="flex:1;height:10px;background:var(--dim);border-radius:99px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:${clDia};width:${wDia}%;transition:width 1s"></div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:${clDia};width:48px;text-align:right">${rt.toFixed(1)}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:10px;color:var(--mut);width:72px;flex-shrink:0;text-transform:uppercase;letter-spacing:.08em">Mês (tot)</div>
+        <div style="flex:1;height:10px;background:var(--dim);border-radius:99px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:var(--acc);width:${wMes}%;transition:width 1s"></div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--txt);width:48px;text-align:right">${sc}</div>
+      </div>
     </div>`;
   }).join('');
 }
