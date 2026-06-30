@@ -77,6 +77,40 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 @media(max-width:1400px){.g4{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:960px){.g4,.g3,.g2{grid-template-columns:1fr}.main{padding:18px 18px}}
 
+/* ── ASSESSOR 4-UP (Captação) ── */
+.ga4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+@media(max-width:1400px){.ga4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:960px){.ga4{grid-template-columns:1fr}}
+
+.ac2{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:22px 22px 20px;transition:border-color .2s}
+.ac2-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:16px}
+.ac2-n{font-size:24px;font-weight:800;letter-spacing:-.01em;line-height:1.15}
+.ac2-pct{font-size:18px;font-weight:800;padding:6px 14px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.ac2-cap{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:800;line-height:1;margin-bottom:14px}
+.ac2-cap.neg{color:var(--red)}
+
+/* tick-meta progress bar (META + REALIZADO) */
+.tkwrap{position:relative;padding-top:38px;padding-bottom:40px}
+.tktrk{height:14px;background:var(--dim);border-radius:99px;overflow:visible;position:relative}
+.tkfil{position:absolute;top:0;left:0;height:100%;border-radius:99px;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.35) 0 4px,transparent 4px 9px);transition:width 1s}
+
+/* marcador META: traço vertical, rótulo ACIMA da barra */
+.tkmeta{position:absolute;top:-18px;bottom:-6px;width:2px;background:var(--txt);z-index:3}
+.tkmeta-lbl{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:800;letter-spacing:.08em;color:var(--mut);white-space:nowrap}
+.tkmeta-val{position:absolute;top:-31px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--txt);white-space:nowrap}
+
+/* marcador REALIZADO: ponto na ponta do preenchido, rótulo ABAIXO da barra */
+.tkreal{position:absolute;top:0;height:14px;z-index:2}
+.tkreal-dot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;background:var(--txt);border:2px solid var(--s1)}
+.tkreal-lbl{position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:800;letter-spacing:.08em;color:var(--mut);white-space:nowrap}
+.tkreal-val{position:absolute;top:32px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--acc);white-space:nowrap}
+.tkreal-val.neg{color:var(--red)}
+
+/* ── INTENSIDADE: grid denso, tudo numa tela ── */
+.igrid-ind{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+@media(max-width:1400px){.igrid-ind{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1920px){.igrid-ind{grid-template-columns:repeat(4,1fr);gap:20px}}
+
 /* ── KPI CARD ── */
 .kc{
   background:var(--s1);border:1px solid var(--bd);border-radius:14px;
@@ -285,11 +319,11 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 
   <!-- ══ CAPTAÇÃO ══ -->
   <div class="view on" id="view-captacao">
+    <div class="st">Captação por Assessor</div>
+    <div class="ga4" id="por-assessor"></div>
+
     <div class="st">Consolidado — Profitto</div>
     <div class="g4" id="kpis"><div class="ld"><div class="sp"></div> Carregando...</div></div>
-
-    <div class="st">Captação por Assessor</div>
-    <div class="g3" id="por-assessor"></div>
 
     <div class="st">Captação por Nível</div>
     <div id="por-nivel" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:14px;margin-bottom:28px"></div>
@@ -318,50 +352,23 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
       </div>
     </div>
 
-    <!-- corpo: assessores individuais em grid denso 2/3 + times 1/3 -->
-    <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:start">
-
-      <!-- COLUNA ESQUERDA: assessores individuais em grid 2 colunas -->
-      <div>
-        <div class="st">Ranking Individual</div>
-        <div id="igrid-ind" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px"></div>
-      </div>
-
-      <!-- COLUNA DIREITA: times / grupos -->
-      <div>
-        <div class="st">Pontos por Time</div>
-        <div id="igrid-times" style="display:flex;flex-direction:column;gap:10px"></div>
-      </div>
-
-    </div>
+    <!-- corpo: ranking individual, denso, tudo na mesma tela -->
+    <div class="st">Ranking Individual</div>
+    <div id="igrid-ind" class="igrid-ind"></div>
   </div>
 
   <!-- ══ RANKING ══ -->
   <div class="view" id="view-ranking">
-    <div id="banner-total"></div>
 
-    <div class="fbar">
-      <button class="fbtn fbtn-up on" id="fbtn-cap" onclick="setSort('cap')">↓ Maior Captação</button>
-      <button class="fbtn fbtn-up" id="fbtn-int" onclick="setSort('int')">↓ Maior Intensidade</button>
-      <button class="fbtn fbtn-dn" id="fbtn-capasc" onclick="setSort('capasc')">↑ Menor Captação</button>
-      <button class="fbtn fbtn-dn" id="fbtn-intasc" onclick="setSort('intasc')">↑ Menor Intensidade</button>
-      <span class="finfo" id="finfo">Mostrando todos · ordenado por captação</span>
-    </div>
-
-    <div class="tblwrap">
-      <table class="rtbl">
-        <thead><tr>
-          <th>#</th>
-          <th>Assessor</th>
-          <th>Cluster</th>
-          <th style="text-align:right">Captação</th>
-          <th style="text-align:right">% Meta</th>
-          <th style="width:200px">Progresso Cap</th>
-          <th style="text-align:right">Score</th>
-          <th style="text-align:right">Ritmo/dia</th>
-        </tr></thead>
-        <tbody id="tbody-rank"></tbody>
-      </table>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:start">
+      <div style="padding-right:24px;border-right:1px solid var(--bd)">
+        <div class="st" style="font-size:16px">Captação por Time</div>
+        <div id="rgrid-cap-times" style="display:flex;flex-direction:column;gap:14px"></div>
+      </div>
+      <div style="padding-left:24px">
+        <div class="st" style="font-size:16px">Pontos por Time</div>
+        <div id="rgrid-pts-times" style="display:flex;flex-direction:column;gap:14px"></div>
+      </div>
     </div>
   </div>
 
@@ -623,27 +630,37 @@ function renderNivel() {
 // ── ASSESSORES ──
 function renderAssessores() {
   const sorted = [...D].sort((a,b)=>b.cap-a.cap);
-  const maxA = Math.max(...D.map(d=>Math.abs(d.cap)),1);
   let h='';
   sorted.forEach(d=>{
-    const pos=d.cap>=0, w=(Math.abs(d.cap)/maxA)*100;
+    const pos = d.cap>=0;
     const bateuMeta = d.pct !== null && d.pct >= 100;
     const bordaExtra = bateuMeta ? 'border-color:var(--grn);border-width:2px;' : '';
-    h+=`<div class="ac" style="${bordaExtra}">
-      <div class="ac-hdr">
-        <div style="flex:1;min-width:0">
-          <div class="ac-n" style="font-size:26px;${bateuMeta?'color:var(--grn)':''}">${d.nome}${bateuMeta?' <span style="font-size:16px;font-weight:700">✓</span>':''}</div>
-          <div class="ac-lvl" style="font-size:13px;margin-top:6px">${d.nivel}</div>
-        </div>
-        <span class="kbd ${bc(d.pct)}" style="font-size:16px;padding:8px 18px;white-space:nowrap">${d.pct!==null?fp(d.pct):'—'}</span>
+    // escala do track: maior entre captação e meta, com folga de 8%
+    const scale = Math.max(Math.abs(d.cap), d.meta||0, 1) * 1.08;
+    const wFill = Math.max(Math.min((Math.abs(d.cap)/scale)*100, 100), 0);
+    const wMark = d.meta ? Math.min((d.meta/scale)*100, 100) : null;
+    // se META e REALIZADO ficarem muito próximos (<7%), empurra os rótulos para não colidir
+    const perto = wMark!==null && Math.abs(wFill - wMark) < 7;
+    const realLblTop = perto ? 'top:40px' : 'top:20px';
+    const realValTop = perto ? 'top:52px' : 'top:32px';
+    h+=`<div class="ac2" style="${bordaExtra}">
+      <div class="ac2-top">
+        <div class="ac2-n" style="${bateuMeta?'color:var(--grn)':''}">${d.nome}${bateuMeta?' <span style="font-size:16px">✓</span>':''}</div>
+        <span class="ac2-pct kbd ${bc(d.pct)}">${d.pct!==null?fp(d.pct):'—'}</span>
       </div>
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:4px">
-        <div style="flex:1;height:14px;background:var(--dim);border-radius:99px;overflow:hidden;position:relative">
-          <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:${pos?'var(--acc)':'var(--red)'};width:${Math.min(Math.max((d.cap/d.meta)*100,0),100)}%;box-shadow:${pos?'0 0 12px rgba(200,169,110,.5)':'0 0 12px rgba(240,106,106,.5)'}"></div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:800;color:${pos?'var(--txt)':'var(--red)'};line-height:1">${fm(d.cap)}</div>
-          <div style="font-size:13px;color:var(--mut);margin-top:3px">meta <span style="color:var(--txt);font-weight:700;font-size:15px">${fm(d.meta)}</span></div>
+      <div class="ac2-cap ${pos?'':'neg'}">${fm(d.cap)}</div>
+      <div class="tkwrap" style="${perto?'padding-bottom:54px':''}">
+        <div class="tktrk">
+          <div class="tkfil" style="width:${wFill}%;background:${bateuMeta?'var(--grn)':(pos?'var(--acc)':'var(--red)')}"></div>
+          ${wMark!==null?`<div class="tkmeta" style="left:${wMark}%">
+            <span class="tkmeta-lbl">META</span>
+            <span class="tkmeta-val">${fm(d.meta)}</span>
+          </div>`:''}
+          <div class="tkreal" style="left:${wFill}%">
+            <span class="tkreal-dot"></span>
+            <span class="tkreal-lbl" style="${realLblTop}">REALIZADO</span>
+            <span class="tkreal-val ${pos?'':'neg'}" style="${realValTop}">${fm(d.cap)}</span>
+          </div>
         </div>
       </div>
     </div>`;
@@ -653,44 +670,95 @@ function renderAssessores() {
 
 // ── RANKING ──
 function renderRanking() {
-  const sorted = sortMode==='cap'  ? [...D].sort((a,b)=>b.cap-a.cap)
-               : sortMode==='int'  ? [...D].sort((a,b)=>b.score-a.score)
-               : sortMode==='capasc' ? [...D].sort((a,b)=>a.cap-b.cap)
-               : [...D].sort((a,b)=>a.score-b.score);
-  const maxCap = Math.max(...D.map(d=>Math.abs(d.cap)),1);
-  const total  = D.reduce((a,d)=>a+d.cap,0);
-  const totalM = D.reduce((a,d)=>a+d.meta,0);
-  const pctT   = totalM?(total/totalM)*100:0;
+  renderTimesRanking();
+}
 
-  document.getElementById('banner-total').innerHTML = `
-    <div class="banner">
-      <div class="bitem"><div class="blbl">Captação Total</div><div class="bval ${total<0?'neg':''}" style="${total<0?'color:var(--red)':''}">${fm(total)}</div></div>
-      <div class="bitem"><div class="blbl">% da Meta</div><div class="bval">${fp(pctT)}</div></div>
-      <div class="bitem"><div class="blbl">Meta Escritório</div><div class="bval">${fm(totalM)}</div></div>
-      <div class="bitem"><div class="blbl">Positivos</div><div class="bval" style="color:var(--grn)">${D.filter(d=>d.cap>0).length} / ${D.length}</div></div>
-      <div class="bitem"><div class="blbl">Score Total</div><div class="bval">${D.reduce((a,d)=>a+d.score,0)}</div></div>
+// ── CAPTAÇÃO POR TIME + PONTOS POR TIME (modelo do esboço: régua com pontos) ──
+const META_DIA_PTS_R = 15;
+
+function renderTimesRanking() {
+  const grupos = [
+    { label: 'PROFITTO',     filter: d => true,                          destaque: true },
+    { label: 'Porto Alegre', filter: d => filial(d.nome)==='Porto Alegre' },
+    { label: 'Torres',       filter: d => filial(d.nome)==='Torres' },
+    { label: 'Blumenau',     filter: d => filial(d.nome)==='Blumenau' },
+    { label: 'Júniores',     filter: d => d.nivel==='Júnior' },
+    { label: 'Plenos',       filter: d => d.nivel==='Pleno' },
+    { label: 'Sêniors',      filter: d => d.nivel==='Sênior' },
+  ];
+
+  const endTicks = `<div style="position:absolute;left:0;top:50%;transform:translateY(-50%);width:2px;height:10px;background:var(--bd)"></div>
+    <div style="position:absolute;right:0;top:50%;transform:translateY(-50%);width:2px;height:10px;background:var(--bd)"></div>`;
+
+  function dot(pct, color) {
+    return `<div style="position:absolute;top:50%;left:${pct}%;transform:translate(-50%,-50%);width:11px;height:11px;border-radius:50%;background:${color};border:2px solid var(--s1);z-index:2"></div>`;
+  }
+
+  // ── CAPTAÇÃO POR TIME: régua única com 2 pontos (Feito / Meta) ──
+  document.getElementById('rgrid-cap-times').innerHTML = grupos.map(g => {
+    const membros = D.filter(g.filter);
+    if (!membros.length) return '';
+    const cap  = membros.reduce((a,d)=>a+d.cap,0);
+    const meta = membros.reduce((a,d)=>a+d.meta,0);
+    const scale = Math.max(Math.abs(cap), meta, 1) * 1.08;
+    const posFeito = Math.max(Math.min((Math.abs(cap)/scale)*100,100),0);
+    const posMeta  = meta ? Math.max(Math.min((meta/scale)*100,100),0) : null;
+    const bateu = meta ? cap>=meta : false;
+    const borda = g.destaque ? 'border-color:rgba(200,169,110,.4)' : '';
+
+    return `<div style="background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:20px 24px;${borda}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:40px">
+        <div style="font-size:24px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:${g.destaque?'var(--acc)':'var(--txt)'}">${g.label}</div>
+        <div style="font-size:15px;color:var(--mut)">${membros.length} assessor${membros.length>1?'es':''}</div>
+      </div>
+      <div style="position:relative;height:3px;background:var(--bd);margin:0 8px 44px">
+        ${endTicks}
+        ${dot(posFeito, bateu?'var(--grn)':'var(--acc)')}
+        <div style="position:absolute;top:18px;left:${posFeito}%;transform:translateX(-50%);text-align:center;white-space:nowrap">
+          <div style="font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)">Feito</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--txt)">${fm(cap)}</div>
+        </div>
+        ${posMeta!==null?`${dot(posMeta,'var(--txt)')}
+        <div style="position:absolute;top:18px;left:${posMeta}%;transform:translateX(-50%);text-align:center;white-space:nowrap">
+          <div style="font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)">Meta</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--txt)">${fm(meta)}</div>
+        </div>`:''}
+      </div>
     </div>`;
+  }).join('');
 
-  document.getElementById('tbody-rank').innerHTML = sorted.map((d,i)=>{
-    const neg=d.cap<0, w=(Math.abs(d.cap)/maxCap)*100;
-    const rt = parseFloat(d.ritmo)||0;
-    const rtBadge = rt>=META_DIA?'bg':rt>=META_DIA*0.6?'by':'br';
-    const bateuMeta = d.pct !== null && d.pct >= 100;
-    const rowStyle = bateuMeta
-      ? 'background:rgba(26,122,80,.06);border-left:3px solid var(--grn)'
-      : neg ? 'border-left:3px solid rgba(192,57,43,.3)' : '';
-    return `<tr style="${rowStyle}">
-      <td><div class="rpos ${pc(i)}">${i+1}</div></td>
-      <td>
-        <div class="rname" style="${bateuMeta?'color:var(--grn)':''}">${d.nome}${bateuMeta?' <span style="font-size:13px">✓</span>':''}</div>
-        <div class="${'rcluster '+clusterCls(d.nivel)}">${d.nivel}</div>
-      </td>
-      <td><span class="kbd ${bc(d.pct)}">${d.pct!==null?fp(d.pct):'—'}</span></td>
-      <td><div class="rnum ${neg?'neg':''}">${fm(d.cap)}</div></td>
-      <td><div class="rnum" style="font-size:20px;color:var(--acc)">${d.score}</div></td>
-      <td class="rmini"><div class="rmbar"><div class="rmfill" style="background:${neg?'var(--red)':'var(--acc)'};width:${w}%"></div></div></td>
-      <td><span class="kbd ${rtBadge}">${rt.toFixed(1)}/dia</span></td>
-    </tr>`;
+  // ── PONTOS POR TIME: 2 réguas (Dia médio / Mês total), cada uma com 1 ponto ──
+  const totalScore = D.reduce((a,d)=>a+d.score,0) || 1;
+
+  function ptsRow(label, displayValue, pct, color, isLast) {
+    return `<div style="display:flex;align-items:center;gap:14px;${isLast?'':'margin-bottom:22px'}">
+      <div style="font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);width:108px;flex-shrink:0">${label}</div>
+      <div style="position:relative;height:3px;background:var(--bd);flex:1;margin:0 6px">
+        ${endTicks}
+        ${dot(pct, color)}
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:${color};width:64px;text-align:right;flex-shrink:0">${displayValue}</div>
+    </div>`;
+  }
+
+  document.getElementById('rgrid-pts-times').innerHTML = grupos.map(g => {
+    const membros = D.filter(g.filter);
+    if (!membros.length) return '';
+    const sc  = membros.reduce((a,d)=>a+d.score,0);
+    const rt  = membros.reduce((a,d)=>a+(parseFloat(d.ritmo)||0),0) / membros.length;
+    const wMes = Math.max(Math.min((sc/totalScore)*100,100),0);
+    const wDia = Math.max(Math.min((rt/META_DIA_PTS_R)*100,100),0);
+    const clDia = rt >= META_DIA_PTS_R ? 'var(--grn)' : rt >= META_DIA_PTS_R*0.6 ? 'var(--ylw)' : 'var(--red)';
+    const borda = g.destaque ? 'border-color:rgba(200,169,110,.4)' : '';
+
+    return `<div style="background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:20px 24px;${borda}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+        <div style="font-size:24px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:${g.destaque?'var(--acc)':'var(--txt)'}">${g.label}</div>
+        <div style="font-size:15px;color:var(--mut)">${membros.length} assessor${membros.length>1?'es':''}</div>
+      </div>
+      ${ptsRow('Dia (média)', rt.toFixed(1), wDia, clDia, false)}
+      ${ptsRow('Mês (total)', sc, wMes, 'var(--acc)', true)}
+    </div>`;
   }).join('');
 }
 
@@ -722,7 +790,7 @@ function renderIntensidade() {
     return               { bg:'rgba(192,57,43,.08)',  border:'rgba(192,57,43,.40)',  numClr:'#a83228', thick: i===total-1 };
   }
 
-  // ── COLUNA ESQUERDA: individual ──
+  // ── RANKING INDIVIDUAL (tela única, denso e visual) ──
   document.getElementById('igrid-ind').innerHTML = sorted.map((d, i) => {
     const rt    = parseFloat(d.ritmo) || 0;
     const wMes  = (d.score / maxScore) * 100;
@@ -730,77 +798,30 @@ function renderIntensidade() {
     const clDia = rt >= META_DIA_PTS ? '#1a7a50' : rt >= META_DIA_PTS * 0.6 ? 'var(--ylw)' : 'var(--red)';
     const pos   = i + 1;
     const pal   = cardPalette(i, n);
-    const borda = `${pal.thick?'2px':'1px'} solid ${pal.border}`;
+    const borda = `${pal.thick?'3px':'1px'} solid ${pal.border}`;
 
-    return `<div style="background:${pal.bg};border:${borda};border-radius:12px;padding:12px 14px;transition:border-color .2s">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;color:${pal.numClr};width:28px;flex-shrink:0">${pos}</div>
+    return `<div style="background:${pal.bg};border:${borda};border-radius:14px;padding:20px 22px;transition:border-color .2s">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:800;color:${pal.numClr};width:44px;flex-shrink:0">${pos}</div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.nome}</div>
-          <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)">${d.nivel}</div>
+          <div style="font-size:22px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.nome}</div>
+          <div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)">${d.nivel}</div>
         </div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;color:${pal.numClr};flex-shrink:0">${d.score}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
-        <div style="font-size:9px;color:var(--mut);width:54px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em">Dia</div>
-        <div style="flex:1;height:7px;background:var(--dim);border-radius:99px;position:relative;overflow:hidden">
-          <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:${clDia};width:${wDia}%;transition:width 1s"></div>
-        </div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:${clDia};width:36px;text-align:right">${rt.toFixed(1)}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div style="font-size:9px;color:var(--mut);width:54px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em">Mês</div>
-        <div style="flex:1;height:7px;background:var(--dim);border-radius:99px;position:relative;overflow:hidden">
-          <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:${pal.numClr};width:${wMes}%;transition:width 1s"></div>
-        </div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--txt);width:36px;text-align:right">${d.score}</div>
-      </div>
-    </div>`;
-  }).join('');
-
-  // ── COLUNA DIREITA: times ──
-  // Grupos: Profitto Total, Torres, Blumenau, Júnior, Pleno, Sênior
-  const grupos = [
-    { label: 'PROFITTO',   filter: d => true,                  destaque: true },
-    { label: 'Torres',     filter: d => filial(d.nome)==='Torres' },
-    { label: 'Blumenau',   filter: d => filial(d.nome)==='Blumenau' },
-    { label: 'Porto Alegre', filter: d => filial(d.nome)==='Porto Alegre' },
-    { label: 'Júniores',   filter: d => d.nivel==='Júnior' },
-    { label: 'Plenos',     filter: d => d.nivel==='Pleno' },
-    { label: 'Sêniors',    filter: d => d.nivel==='Sênior' },
-  ];
-
-  const totalScore = D.reduce((a,d)=>a+d.score,0);
-  const totalRitmo = D.length ? D.reduce((a,d)=>a+(parseFloat(d.ritmo)||0),0)/D.length : 0;
-
-  document.getElementById('igrid-times').innerHTML = grupos.map(g => {
-    const membros = D.filter(g.filter);
-    if (!membros.length) return '';
-    const sc  = membros.reduce((a,d)=>a+d.score,0);
-    const rt  = membros.reduce((a,d)=>a+(parseFloat(d.ritmo)||0),0) / membros.length;
-    const wMes = (sc / Math.max(totalScore,1)) * 100;
-    const wDia = Math.min((rt / META_DIA_PTS) * 100, 100);
-    const clDia = rt >= META_DIA_PTS ? 'var(--grn)' : rt >= META_DIA_PTS*0.6 ? 'var(--ylw)' : 'var(--red)';
-    const borda = g.destaque ? 'border-color:rgba(200,169,110,.4)' : '';
-
-    return `<div style="background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:16px 20px;${borda}">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div style="font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:${g.destaque?'var(--acc)':'var(--txt)'}">${g.label}</div>
-        <div style="font-size:12px;color:var(--mut)">${membros.length} assessor${membros.length>1?'es':''}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:800;color:${pal.numClr};flex-shrink:0">${d.score}</div>
       </div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:7px">
-        <div style="font-size:10px;color:var(--mut);width:72px;flex-shrink:0;text-transform:uppercase;letter-spacing:.08em">Dia (méd)</div>
+        <div style="font-size:10px;color:var(--mut);width:60px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em">Dia</div>
         <div style="flex:1;height:10px;background:var(--dim);border-radius:99px;position:relative;overflow:hidden">
           <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:${clDia};width:${wDia}%;transition:width 1s"></div>
         </div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:${clDia};width:48px;text-align:right">${rt.toFixed(1)}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:${clDia};width:44px;text-align:right">${rt.toFixed(1)}</div>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
-        <div style="font-size:10px;color:var(--mut);width:72px;flex-shrink:0;text-transform:uppercase;letter-spacing:.08em">Mês (tot)</div>
+        <div style="font-size:10px;color:var(--mut);width:60px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em">Mês</div>
         <div style="flex:1;height:10px;background:var(--dim);border-radius:99px;position:relative;overflow:hidden">
-          <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:var(--acc);width:${wMes}%;transition:width 1s"></div>
+          <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:${pal.numClr};width:${wMes}%;transition:width 1s"></div>
         </div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--txt);width:48px;text-align:right">${sc}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--txt);width:44px;text-align:right">${d.score}</div>
       </div>
     </div>`;
   }).join('');
