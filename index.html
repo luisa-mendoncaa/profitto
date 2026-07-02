@@ -96,14 +96,14 @@ body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-he
 
 /* marcador META: traço vertical, rótulo ACIMA da barra */
 .tkmeta{position:absolute;top:-18px;bottom:-6px;width:2px;background:var(--txt);z-index:3}
-.tkmeta-lbl{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:800;letter-spacing:.08em;color:var(--mut);white-space:nowrap}
-.tkmeta-val{position:absolute;top:-31px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--txt);white-space:nowrap}
+.tkmeta-lbl{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--mut);white-space:nowrap}
+.tkmeta-val{position:absolute;top:-31px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--txt);white-space:nowrap}
 
 /* marcador REALIZADO: ponto na ponta do preenchido, rótulo ABAIXO da barra */
 .tkreal{position:absolute;top:0;height:14px;z-index:2}
 .tkreal-dot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;background:var(--txt);border:2px solid var(--s1)}
-.tkreal-lbl{position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:800;letter-spacing:.08em;color:var(--mut);white-space:nowrap}
-.tkreal-val{position:absolute;top:32px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--acc);white-space:nowrap}
+.tkreal-lbl{position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--mut);white-space:nowrap}
+.tkreal-val{position:absolute;top:32px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--acc);white-space:nowrap}
 .tkreal-val.neg{color:var(--red)}
 
 /* ── LEVEL GRID (Captação por Nível) ── */
@@ -689,36 +689,57 @@ function renderNivel() {
 // ── ASSESSORES ──
 function renderAssessores() {
   const sorted = [...D].sort((a,b)=>b.cap-a.cap);
+  const n = sorted.length;
+
+  // mesma paleta posicional da intensidade, mas baseada em captação
+  function capPalette(i, total, cap) {
+    if (cap < 0) return { bg:'rgba(192,57,43,.10)', border:'rgba(192,57,43,.45)', numClr:'#a83228', thick: true };
+    const t = total <= 1 ? 0 : i / (total - 1);
+    if (t <= 0.25) return { bg:'rgba(26,122,80,.09)',  border:'rgba(26,122,80,.40)',  numClr:'#1a6e44', thick: i===0 };
+    if (t <= 0.5)  return { bg:'rgba(26,122,80,.04)',  border:'rgba(26,122,80,.18)',  numClr:'#2a7a50', thick: false };
+    if (t <= 0.75) return { bg:'rgba(180,80,40,.03)',  border:'rgba(180,80,40,.15)',  numClr:'#8a5030', thick: false };
+    return               { bg:'rgba(192,57,43,.07)',  border:'rgba(192,57,43,.35)',  numClr:'#a83228', thick: false };
+  }
+
   let h='';
-  sorted.forEach(d=>{
-    const pos = d.cap>=0;
+  sorted.forEach((d, i)=>{
+    const pos = d.cap >= 0;
     const bateuMeta = d.pct !== null && d.pct >= 100;
-    const bordaExtra = bateuMeta ? 'border-color:var(--grn);border-width:2px;' : '';
-    // escala do track: maior entre captação e meta, com folga de 8%
+    const pal = capPalette(i, n, d.cap);
+    const borda = `${pal.thick?'2px':'1px'} solid ${pal.border}`;
+
     const scale = Math.max(Math.abs(d.cap), d.meta||0, 1) * 1.08;
     const wFill = Math.max(Math.min((Math.abs(d.cap)/scale)*100, 100), 0);
     const wMark = d.meta ? Math.min((d.meta/scale)*100, 100) : null;
-    // se META e REALIZADO ficarem muito próximos (<7%), empurra os rótulos para não colidir
+    const barColor = bateuMeta ? 'var(--grn)' : (pos ? 'var(--acc)' : 'var(--red)');
+
+    // rótulos com anti-colisão
     const perto = wMark!==null && Math.abs(wFill - wMark) < 7;
     const realLblTop = perto ? 'top:40px' : 'top:20px';
-    const realValTop = perto ? 'top:52px' : 'top:32px';
-    h+=`<div class="ac2" style="${bordaExtra}">
-      <div class="ac2-top">
-        <div class="ac2-n" style="${bateuMeta?'color:var(--grn)':''}">${d.nome}${bateuMeta?' <span style="font-size:16px">✓</span>':''}</div>
-        <span class="ac2-pct kbd ${bc(d.pct)}">${d.pct!==null?fp(d.pct):'—'}</span>
-      </div>
-      <div class="ac2-cap ${pos?'':'neg'}">${fm(d.cap)}</div>
-      <div class="tkwrap" style="${perto?'padding-bottom:54px':''}">
-        <div class="tktrk">
-          <div class="tkfil" style="width:${wFill}%;background:${bateuMeta?'var(--grn)':(pos?'var(--acc)':'var(--red)')}"></div>
-          ${wMark!==null?`<div class="tkmeta" style="left:${wMark}%">
-            <span class="tkmeta-lbl">META</span>
-            <span class="tkmeta-val">${fm(d.meta)}</span>
-          </div>`:''}
-          <div class="tkreal" style="left:${wFill}%">
-            <span class="tkreal-dot"></span>
-            <span class="tkreal-lbl" style="${realLblTop}">REALIZADO</span>
-            <span class="tkreal-val ${pos?'':'neg'}" style="${realValTop}">${fm(d.cap)}</span>
+    const realValTop = perto ? 'top:55px' : 'top:35px';
+
+    h+=`<div style="background:${pal.bg};border:${borda};border-radius:16px;padding:20px 22px;transition:border-color .2s">
+      <div style="display:flex;align-items:center;gap:14px">
+        <!-- nome + nível -->
+        <div style="flex-shrink:0;min-width:0;max-width:200px">
+          <div style="font-size:22px;font-weight:800;letter-spacing:-.01em;line-height:1.1;color:${bateuMeta?'var(--grn)':'var(--txt)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.nome}</div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--mut);margin-top:4px">${d.nivel||''}</div>
+        </div>
+        <!-- barra + valores -->
+        <div style="flex:1;min-width:0">
+          <div class="tkwrap" style="${perto?'padding-bottom:68px':'padding-bottom:54px'}">
+            <div class="tktrk">
+              <div class="tkfil" style="width:${wFill}%;background:${barColor}"></div>
+              ${wMark!==null?`<div class="tkmeta" style="left:${wMark}%">
+                <span class="tkmeta-lbl">META</span>
+                <span class="tkmeta-val">${fm(d.meta)}</span>
+              </div>`:''}
+              <div class="tkreal" style="left:${wFill}%">
+                <span class="tkreal-dot" style="background:${barColor}"></span>
+                <span class="tkreal-lbl" style="${realLblTop}">REAL</span>
+                <span class="tkreal-val ${pos?'':'neg'}" style="${realValTop}">${fm(d.cap)}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -840,48 +861,44 @@ function renderIntensidade() {
   const n = sorted.length;
   const maxScore = Math.max(...D.map(d => d.score), 1);
 
-  // paleta posicional: top verde → meio neutro → bottom vermelho
   function cardPalette(i, total) {
-    const t = total <= 1 ? 0.5 : i / (total - 1); // 0 = topo, 1 = fundo
-    if (t <= 0.25)      return { bg:'rgba(26,122,80,.07)',  border:'rgba(26,122,80,.35)',  numClr:'#1a6e44', thick: i===0 };
-    if (t <= 0.5)       return { bg:'rgba(26,122,80,.03)',  border:'rgba(26,122,80,.15)',  numClr:'#2a7a50', thick: false };
-    if (t <= 0.75)      return { bg:'rgba(180,80,40,.03)',  border:'rgba(180,80,40,.15)',  numClr:'#8a5030', thick: false };
+    const t = total <= 1 ? 0.5 : i / (total - 1);
+    if (t <= 0.25) return { bg:'rgba(26,122,80,.07)',  border:'rgba(26,122,80,.35)',  numClr:'#1a6e44', thick: i===0 };
+    if (t <= 0.5)  return { bg:'rgba(26,122,80,.03)',  border:'rgba(26,122,80,.15)',  numClr:'#2a7a50', thick: false };
+    if (t <= 0.75) return { bg:'rgba(180,80,40,.03)',  border:'rgba(180,80,40,.15)',  numClr:'#8a5030', thick: false };
     return               { bg:'rgba(192,57,43,.08)',  border:'rgba(192,57,43,.40)',  numClr:'#a83228', thick: i===total-1 };
   }
 
-  // ── RANKING INDIVIDUAL (tela única, denso e visual) ──
   document.getElementById('igrid-ind').innerHTML = sorted.map((d, i) => {
-    const rt    = parseFloat(d.ritmo) || 0;
-    const wMes  = (d.score / maxScore) * 100;
-    const wDia  = Math.min((rt / META_DIA_PTS) * 100, 100);
-    const clDia = rt >= META_DIA_PTS ? '#1a7a50' : rt >= META_DIA_PTS * 0.6 ? 'var(--ylw)' : 'var(--red)';
-    const pos   = i + 1;
-    const pal   = cardPalette(i, n);
-    const borda = `${pal.thick?'3px':'1px'} solid ${pal.border}`;
+    const rt     = parseFloat(d.ritmo) || 0;
+    const wDia   = Math.min((rt / META_DIA_PTS) * 100, 100);
+    const wMes   = (d.score / maxScore) * 100;
+    const clDia  = rt >= META_DIA_PTS ? '#1a7a50' : rt >= META_DIA_PTS * 0.6 ? 'var(--ylw)' : 'var(--red)';
+    const clMes  = d.score >= maxScore * 0.7 ? '#1a7a50' : d.score >= maxScore * 0.4 ? 'var(--ylw)' : 'var(--red)';
+    const pos    = i + 1;
+    const pal    = cardPalette(i, n);
+    const borda  = `${pal.thick?'3px':'1px'} solid ${pal.border}`;
 
-    return `<div style="background:${pal.bg};border:${borda};border-radius:14px;padding:20px 22px;transition:border-color .2s">
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:800;color:${pal.numClr};width:44px;flex-shrink:0">${pos}</div>
+    function bar(label, val, w, cl) {
+      return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px">
+        <div style="font-size:10px;color:var(--mut);width:76px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em">${label}</div>
+        <div style="flex:1;height:10px;background:var(--dim);border-radius:99px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:${cl};width:${w}%;transition:width 1s"></div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:${cl};width:44px;text-align:right">${val}</div>
+      </div>`;
+    }
+
+    return `<div style="background:${pal.bg};border:${borda};border-radius:14px;padding:18px 20px;transition:border-color .2s">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:800;color:${pal.numClr};width:40px;flex-shrink:0">${pos}</div>
         <div style="flex:1;min-width:0">
-          <div style="font-size:22px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.nome}</div>
-          <div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)">${d.nivel}</div>
+          <div style="font-size:20px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.nome}</div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)">${d.nivel}</div>
         </div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:800;color:${pal.numClr};flex-shrink:0">${d.score}</div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:7px">
-        <div style="font-size:10px;color:var(--mut);width:60px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em">Dia</div>
-        <div style="flex:1;height:10px;background:var(--dim);border-radius:99px;position:relative;overflow:hidden">
-          <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:${clDia};width:${wDia}%;transition:width 1s"></div>
-        </div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:${clDia};width:44px;text-align:right">${rt.toFixed(1)}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="font-size:10px;color:var(--mut);width:60px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em">Mês</div>
-        <div style="flex:1;height:10px;background:var(--dim);border-radius:99px;position:relative;overflow:hidden">
-          <div style="position:absolute;top:0;left:0;height:100%;border-radius:99px;background:${pal.numClr};width:${wMes}%;transition:width 1s"></div>
-        </div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--txt);width:44px;text-align:right">${d.score}</div>
-      </div>
+      ${bar('Média Dia', rt.toFixed(1), wDia, clDia)}
+      ${bar('Total Mês', d.score, wMes, clMes)}
     </div>`;
   }).join('');
 }
